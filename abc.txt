@@ -1,0 +1,85 @@
+var cname = $('#cname').val();
+			 var cmono = $('#cmono').val();
+			 var d = $('.add1').find("select");
+			 var l = Object.keys(d).length - 2;
+			 var a = [];
+			 var cout = 0;
+			 $ddp=$('#medcine').val();
+			 if($ddp == 0){
+			 	cout++;
+			 }
+			 a.push($ddp);
+			 for(var i=1;i<l;i++) {
+			 	a.push($('#medcine'+i).val());
+				if($('#medcine'+i).val()==0){
+					cout++;
+				}
+			 }
+			 if(cname == ""){
+			 	pops("Fill Customer Name","error");
+			 }
+			 else if(cmono == ""){
+			 	pops("Fill Customer Mobile Number","error");
+			 }
+			 else if(cout != 0){
+			 	pops("Select Medicines..","error");
+			 }
+			 else{
+				   if($('#gen').val()=='Proceed'){
+						$.ajax({
+							type : "POST",
+							url : "PHP/GenBill.php",
+							data : {a:a,cname:cname,cmono:cmono},
+							success : function(data){
+								if(data == 1){
+									$('.main').load('PHP/billing.php/#display');
+									alert('Data Inserted..');
+									sc=0;
+								}
+								$('#cname').val("");
+								$('#cmono').val("");
+								//$('#medcine > option[value="0"]').attr("Selected", true);
+								$('#medcine').nextUntil("input[type='button']").remove();
+								$('.back1').removeClass('show1');
+							}
+						});
+					}
+					else
+					{
+						$.ajax({
+							type : "POST",
+							url : "PHP/updateBill.php",
+							data : {a:a,cname:cname,cmono:cmono},
+							success : function(data){
+								$('.main').load('PHP/billing.php/#display');
+									alert(1);
+									$('#cname').val("");
+									$('#cmono').val("");
+									$('#medcine > option[value="0"]').attr("Selected", true);
+									$('#medcine').nextUntil("input[type='button']").remove();
+									$('.back1').removeClass('show1');
+							}
+						});
+					}
+			 }
+
+
+
+
+
+****************************************************
+var c = $('#medcine').attr('select_count');
+				 $.ajax({
+					type : "POST",
+					url : "PHP/fillDrop.php",
+					data : {},
+					dataType:"JSON",
+					success : function(data){
+					var  ac = 0;
+						data.id.filter(function(i) {
+							var sid = '#medcine'+c;
+							$(sid).append("<option value='"+i+"' ps="+data.price[ac]+">"+data.name[ac]+"</option>");
+							ac++;
+						});
+					}
+			   });
